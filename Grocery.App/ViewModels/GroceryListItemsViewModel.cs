@@ -15,6 +15,8 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
+        private readonly GlobalViewModel _global;
+
         private string searchText = "";
 
         public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
@@ -25,12 +27,13 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         string myMessage;
 
-        public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService)
+        public GroceryListItemsViewModel(IGroceryListItemsService groceryListItemsService, IProductService productService, IFileSaverService fileSaverService, GlobalViewModel global)
         {
             _groceryListItemsService = groceryListItemsService;
             _productService = productService;
             _fileSaverService = fileSaverService;
             Load(groceryList.Id);
+            _global = global;
         }
 
         private void Load(int id)
@@ -118,6 +121,19 @@ namespace Grocery.App.ViewModels
             item.Product.Stock++;
             _productService.Update(item.Product);
             OnGroceryListChanged(GroceryList);
+        }
+
+        [RelayCommand]
+        public void ShowBoughtProducts()
+        {
+            Client? client = _global.Client;
+            if (client == null)
+                return;
+
+            if (client.UserRole == Client.Role.Admin)
+            {
+                Shell.Current.GoToAsync("BoughtProductsView");
+            }
         }
     }
 }
