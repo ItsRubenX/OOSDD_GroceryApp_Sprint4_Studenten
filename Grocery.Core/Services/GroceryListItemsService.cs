@@ -51,6 +51,7 @@ namespace Grocery.Core.Services
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
+
             List<GroceryListItem> allItems = _groceriesRepository.GetAll();
             var productSales = allItems
                 .GroupBy(item => item.ProductId)
@@ -62,6 +63,7 @@ namespace Grocery.Core.Services
                 .OrderByDescending(x => x.NrOfSells)
                 .Take(topX)
                 .ToList();
+
 
             Dictionary<int, Product> allProducts = _productRepository.GetAll().ToDictionary(p => p.Id);
 
