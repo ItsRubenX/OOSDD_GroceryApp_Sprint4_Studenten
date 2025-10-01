@@ -51,7 +51,8 @@ namespace Grocery.Core.Services
 
         public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
         {
-            var allItems = _groceriesRepository.GetAll();
+
+            List<GroceryListItem> allItems = _groceriesRepository.GetAll();
             var productSales = allItems
                 .GroupBy(item => item.ProductId)
                 .Select(g => new
@@ -63,10 +64,13 @@ namespace Grocery.Core.Services
                 .Take(topX)
                 .ToList();
 
-            var allProducts = _productRepository.GetAll().ToDictionary(p => p.Id);
 
-            var result = new List<BestSellingProducts>();
+            Dictionary<int, Product> allProducts = _productRepository.GetAll().ToDictionary(p => p.Id);
+
+            List<BestSellingProducts> result = new();
+
             int rank = 1;
+
             foreach (var sale in productSales)
             {
                 if (allProducts.TryGetValue(sale.ProductId, out var product))
